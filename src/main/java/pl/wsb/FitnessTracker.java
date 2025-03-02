@@ -9,7 +9,7 @@ public class FitnessTracker {
 
     public static void main(String[] args) {
         SpringApplication.run(FitnessTracker.class, args);
-        System.out.println("hello michał  from tomek");
+
     }
 
 }
