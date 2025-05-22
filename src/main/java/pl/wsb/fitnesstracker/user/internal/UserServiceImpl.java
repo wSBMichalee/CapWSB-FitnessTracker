@@ -40,5 +40,25 @@ class UserServiceImpl implements UserService, UserProvider {
     public List<User> findAllUsers() {
         return userRepository.findAll();
     }
+    public void deleteUser(Long userId) {
+        userRepository.deleteById(userId);
+    }
 
+    public List<User> searchUsersByEmailFragment(String emailFragment) {
+        String lowerFragment = emailFragment.toLowerCase();
+        return userRepository.findAll().stream()
+                .filter(user -> user.getEmail() != null &&
+                        user.getEmail().toLowerCase().contains(lowerFragment))
+                .toList();
+    }
+
+    public List<User> searchUsersByAgeGreaterThan(int age) {
+        return userRepository.findAll().stream()
+                .filter(user -> user.getAge() > age)
+                .toList();
+    }
+
+    public User saveUser(User user) {
+        return userRepository.save(user);
+    }
 }

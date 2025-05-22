@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.time.Period;
 
 @Entity
 @Table(name = "users")
@@ -34,6 +35,7 @@ public class User {
     private String email;
 
     public User(
+
             final String firstName,
             final String lastName,
             final LocalDate birthdate,
@@ -44,6 +46,12 @@ public class User {
         this.birthdate = birthdate;
         this.email = email;
     }
-
+    public int getAge() {
+        if (birthdate != null) {
+            LocalDate today = LocalDate.now();
+            return Period.between(birthdate, today).getYears();
+        }
+        return 0;
+    }
 }
 
