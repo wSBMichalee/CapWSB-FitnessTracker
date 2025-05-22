@@ -1,11 +1,15 @@
 package pl.wsb.fitnesstracker.user.api;
 
-/**
- * Interface (API) for modifying operations on {@link User} entities through the API.
- * Implementing classes are responsible for executing changes within a database transaction, whether by continuing an existing transaction or creating a new one if required.
- */
+import java.util.List;
+
 public interface UserService {
+    List<UserBasicDTO> findAllBasicInfo();
+    UserDetailsDTO findById(Long id);
+    UserDetailsDTO create(UserCreateDTO dto);
+    void delete(Long id);
+    List<UserEmailDTO> findByEmailFragment(String fragment);
+    List<UserBasicDTO> findOlderThan(int age);
+    UserDetailsDTO update(Long id, UserUpdateDTO dto);
 
     User createUser(User user);
-
 }

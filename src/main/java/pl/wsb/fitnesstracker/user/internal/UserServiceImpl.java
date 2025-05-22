@@ -13,7 +13,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-class UserServiceImpl implements UserService, UserProvider {
+abstract class UserServiceImpl implements UserService, UserProvider {
 
     private final UserRepository userRepository;
 
