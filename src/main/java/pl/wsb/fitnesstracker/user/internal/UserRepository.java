@@ -22,9 +22,5 @@ interface UserRepository extends JpaRepository<User, Long> {
                 .filter(user -> Objects.equals(user.getEmail(), email))
                 .findFirst();
     }
-    List<User> findByEmailIgnoreCaseContaining(String emailFragment);
-
-    @Query("SELECT u FROM User u WHERE YEAR(CURRENT_DATE) - YEAR(u.birthdate) > :age")
-    List<User> findByAgeGreaterThan(@Param("age") int age);
 }
 
