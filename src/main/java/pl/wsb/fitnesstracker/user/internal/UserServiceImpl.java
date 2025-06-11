@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.wsb.fitnesstracker.user.api.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,40 +16,12 @@ public class UserServiceImpl implements UserService, UserProvider {
 
     private final UserRepository userRepository;
 
-    @Override
-    public List<UserBasicDTO> findAllBasicInfo() {
-        return List.of();
-    }
 
     @Override
-    public UserDetailsDTO findById(Long id) {
-        return null;
+    public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
     }
 
-    @Override
-    public UserDetailsDTO create(UserCreateDTO dto) {
-        return null;
-    }
-
-    @Override
-    public void delete(Long id) {
-
-    }
-
-    @Override
-    public List<UserEmailDTO> findByEmailFragment(String fragment) {
-        return List.of();
-    }
-
-    @Override
-    public List<UserBasicDTO> findOlderThan(int age) {
-        return List.of();
-    }
-
-    @Override
-    public UserDetailsDTO update(Long id, UserUpdateDTO dto) {
-        return null;
-    }
 
     @Override
     public User createUser(final User user) {
@@ -89,9 +62,9 @@ public class UserServiceImpl implements UserService, UserProvider {
     }
 
     @Override
-    public List<User> searchUsersByAgeGreaterThan(int age) {
+    public List<User> searchUsersByAgeGreaterThan(LocalDate age) {
         return userRepository.findAll().stream()
-                .filter(user -> user.getAge() > age)
+                .filter(user -> user.getBirthdate().isBefore(age))
                 .toList();
     }
 
