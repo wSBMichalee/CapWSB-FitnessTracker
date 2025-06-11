@@ -3,6 +3,8 @@ package pl.wsb.fitnesstracker.user.internal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.wsb.fitnesstracker.user.api.UserDetailsDTO;
+import pl.wsb.fitnesstracker.user.api.UserUpdateDTO;
 
 import java.util.List;
 
@@ -11,67 +13,50 @@ import java.util.List;
 @RequiredArgsConstructor
 class UserController {
 
-    private final UserServiceImpl userService;
-    private final UserMapper userMapper;
+    private final UserService userService;
+
+    @GetMapping("/simple")
+    public List<UserBasicDTO> getAllUsersSimple() {
+        return userService.getAllUsersSimple();
+    }
 
     @GetMapping
-    public List<UserDto> getAllUsers() {
-        return userService.findAllUsers()
-                .stream()
-                .map(userMapper::toDto)
-                .toList();
+    public List<UserDetailsDTO> getAllUsers() {
+        return userService.getAllUsers();
     }
 
-//    @PostMapping
-//    public UserDto addUser(@RequestBody UserDto userDto) {
-//        var user = userMapper.fromDto(userDto);
-//        var savedUser = userService.saveUser(user);
-//        return userMapper.toDto(savedUser);
-//    }
-//
-//    @GetMapping("/{id}")
-//    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
-//        return userService.findUserById(id)
-//                .map(userMapper::toDto)
-//                .map(ResponseEntity::ok)
-//                .orElse(ResponseEntity.notFound().build());
-//    }
-//
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-//        if (userService.findUserById(id).isPresent()) {
-//            userService.deleteUser(id);
-//            return ResponseEntity.noContent().build();
-//        } else {
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
-//
-//    @PutMapping("/{id}")
-//    public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
-//        if (userService.findUserById(id).isPresent()) {
-//            var user = userMapper.fromDto(userDto);
-//            user.setId(id);
-//            var updatedUser = userService.saveUser(user);
-//            return ResponseEntity.ok(userMapper.toDto(updatedUser));
-//        } else {
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
-
-    @GetMapping("/search/email")
-    public List<UserDto> searchByEmailFragment(@RequestParam String email) {
-        return userService.searchUsersByEmailFragment(email)
-                .stream()
-                .map(userMapper::toDto)
-                .toList();
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDetailsDTO> getUserById(@PathVariable Long id) {
+        return userService.getUserById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/search/age")
-    public List<UserDto> searchByAge(@RequestParam int age) {
-        return userService.searchUsersByAgeGreaterThan(age)
-                .stream()
-                .map(userMapper::toDto)
-                .toList();
+    @GetMapping("/search")
+    public ResponseEntity<List<UserEmailDTO>> searchByEmail(@RequestParam("email") String fragment) {
+        return ResponseEntity.ok(userService.searchByEmailFragment(fragment));
+    }
+
+    @GetMapping("/older-than")
+    public ResponseEntity<List<UserBasicDTO>> getUsersOlderThan(@RequestParam("age") int age) {
+        return ResponseEntity.ok(userService.getUsersOlderThan(age));
+    }
+
+    @PostMapping
+    public ResponseEntity<UserDetailsDTO> createUser(@RequestBody UserCreateDTO dto) {
+        return ResponseEntity.ok(userService.createUser(dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<UserDetailsDTO> updateUser(@PathVariable Long id, @RequestBody UserUpdateDTO dto) {
+        return userService.updateUser(id, dto)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }

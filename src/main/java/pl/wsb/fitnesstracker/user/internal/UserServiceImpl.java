@@ -1,102 +1,85 @@
 package pl.wsb.fitnesstracker.user.internal;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.wsb.fitnesstracker.user.api.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
-public class UserServiceImpl implements UserService, UserProvider {
+class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Override
-    public List<UserBasicDTO> findAllBasicInfo() {
-        return List.of();
+    public List<UserBasicDTO> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(user -> new UserBasicDTO(user.getId(), user.getFirstName() + " " + user.getLastName()))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public UserDetailsDTO findById(Long id) {
-        return null;
+    public List<UserBasicDTO> getAllUsersSimple() {
+        return userRepository.findAll().stream()
+                .map(user -> new UserBasicDTO(user.getId(), user.getFirstName() + " " + user.getLastName()))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public UserDetailsDTO create(UserCreateDTO dto) {
-        return null;
+    public Optional<UserDetailsDTO> getUserById(Long id) {
+        return userRepository.findById(id).map(userMapper::toDetailsDto);
     }
 
     @Override
-    public void delete(Long id) {
-
+    public List<UserEmailDTO> searchByEmailFragment(String fragment) {
+        return userRepository.findByEmailIgnoreCaseContaining(fragment).stream()
+                .map(user -> new UserEmailDTO(user.getId(), user.getEmail()))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<UserEmailDTO> findByEmailFragment(String fragment) {
-        return List.of();
+    public List<UserBasicDTO> getUsersOlderThan(int age) {
+        LocalDate dateThreshold = LocalDate.now().minusYears(age);
+        return userRepository.findAll().stream()
+                .filter(user -> user.getBirthdate().isBefore(dateThreshold))
+                .map(user -> new UserBasicDTO(user.getId(), user.getFirstName() + " " + user.getLastName()))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<UserBasicDTO> findOlderThan(int age) {
-        return List.of();
-    }
-
-    @Override
-    public UserDetailsDTO update(Long id, UserUpdateDTO dto) {
-        return null;
-    }
-
-    @Override
-    public User createUser(final User user) {
-        log.info("Creating User {}", user);
-        if (user.getId() != null) {
-            throw new IllegalArgumentException("User has already DB ID, update is not permitted!");
+    public UserDetailsDTO createUser(UserCreateDTO dto) {
+        // Sprawdź, czy DTO nie zawiera nulli i ma wszystkie wymagane pola
+        if (dto.firstName() == null || dto.lastName() == null || dto.birthdate() == null || dto.email() == null) {
+            throw new IllegalArgumentException("Wszystkie pola muszą być wypełnione");
         }
-        return userRepository.save(user);
+
+        User user = new User();
+        user.setFirstName(dto.firstName());
+        user.setLastName(dto.lastName());
+        user.setBirthdate(dto.birthdate());
+        user.setEmail(dto.email());
+
+        return userMapper.toDetailsDto(userRepository.save(user));
     }
 
     @Override
-    public Optional<User> getUser(final Long userId) {
-        return userRepository.findById(userId);
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
     }
 
     @Override
-    public Optional<User> getUserByEmail(final String email) {
-        return userRepository.findByEmail(email);
-    }
-
-    @Override
-    public List<User> findAllUsers() {
-        return userRepository.findAll();
-    }
-
-    @Override
-    public void deleteUser(Long userId) {
-        userRepository.deleteById(userId);
-    }
-
-    @Override
-    public List<User> searchUsersByEmailFragment(String emailFragment) {
-        String lowerFragment = emailFragment.toLowerCase();
-        return userRepository.findAll().stream()
-                .filter(user -> user.getEmail() != null &&
-                        user.getEmail().toLowerCase().contains(lowerFragment))
-                .toList();
-    }
-
-    @Override
-    public List<User> searchUsersByAgeGreaterThan(int age) {
-        return userRepository.findAll().stream()
-                .filter(user -> user.getAge() > age)
-                .toList();
-    }
-
-    @Override
-    public User saveUser(User user) {
-        return userRepository.save(user);
+    public Optional<UserDetailsDTO> updateUser(Long id, UserUpdateDTO dto) {
+        return userRepository.findById(id).map(user -> {
+            if (dto.firstName() != null) user.setFirstName(dto.firstName());
+            if (dto.lastName() != null) user.setLastName(dto.lastName());
+            if (dto.birthdate() != null) user.setBirthdate(dto.birthdate());
+            if (dto.email() != null) user.setEmail(dto.email());
+            return userMapper.toDetailsDto(userRepository.save(user));
+        });
     }
 }
