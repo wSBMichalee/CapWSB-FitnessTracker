@@ -51,12 +51,8 @@ public class User {
         this.birthdate = birthdate;
         this.email = email;
     }
-    public int getAge() {
-        if (birthdate != null) {
-            LocalDate today = LocalDate.now();
-            return Period.between(birthdate, today).getYears();
-        }
-        return 0;
+    public User(Long id) {
+        this.id = id;
     }
 }
 

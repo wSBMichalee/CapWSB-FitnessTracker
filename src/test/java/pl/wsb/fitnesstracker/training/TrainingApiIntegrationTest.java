@@ -192,6 +192,7 @@ class TrainingApiIntegrationTest extends IntegrationTestBase {
                 .andExpect(jsonPath("$.distance").value(10.52))
                 .andExpect(jsonPath("$.averageSpeed").value(8.2));
 
+        System.out.println("break");
     }
 
     @Test

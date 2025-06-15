@@ -1,10 +1,7 @@
 package pl.wsb.fitnesstracker.training.api;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import pl.wsb.fitnesstracker.training.internal.ActivityType;
 import pl.wsb.fitnesstracker.user.api.User;
 
@@ -15,6 +12,7 @@ import java.util.Date;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
+@Setter
 public class Training {
 
     @Id
@@ -40,6 +38,7 @@ public class Training {
 
     @Column(name = "average_speed")
     private double averageSpeed;
+
 
     public Training(
             final User user,
