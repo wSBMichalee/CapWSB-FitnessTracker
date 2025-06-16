@@ -34,6 +34,7 @@ public class TrainingController {
         Training updated = trainingService.updateTraining(id, updates);
         return trainingMapper.toDto(updated);
     }
+
     @PutMapping("/{trainingId}")
     public ResponseEntity<?> updateTrainingFully(
             @PathVariable Long trainingId,
@@ -44,7 +45,8 @@ public class TrainingController {
         }
         try {
             Training updatedTraining = trainingService.updateTrainingFully(trainingId, trainingDto);
-            return ResponseEntity.ok(updatedTraining);
+            return ResponseEntity.ok(trainingMapper.toDto(updatedTraining));
+
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (RuntimeException e) {
