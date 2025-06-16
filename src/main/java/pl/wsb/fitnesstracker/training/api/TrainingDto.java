@@ -10,8 +10,10 @@ public class TrainingDto {
     private Date startTime;
     private Date endTime;
     private ActivityType activityType;
+    private UserDto user;
     private double distance;
     private double averageSpeed;
+
 
     public Long getId() {
         return id;
@@ -21,13 +23,18 @@ public class TrainingDto {
         this.id = id;
     }
 
-    public Long getUser() {
+    public Long getUserId() {
         return userId;
     }
 
     public void setUserId(Long userId) {
         this.userId = userId;
     }
+
+    public UserDto getUser() {
+        return user;
+    }
+
 
     public Date getStartTime() {
         return startTime;
@@ -67,5 +74,9 @@ public class TrainingDto {
 
     public void setAverageSpeed(double averageSpeed) {
         this.averageSpeed = averageSpeed;
+    }
+
+    public void setUser(UserDto user) {
+        this.user = user;
     }
 }

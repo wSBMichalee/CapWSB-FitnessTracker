@@ -27,28 +27,21 @@ public class TrainingController {
                 .collect(Collectors.toList());
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Training createTraining(@RequestBody TrainingDto trainingDto) {
-        Training savedTraining = trainingService.createTraining(trainingDto);
-        return trainingService.createTraining(trainingDto);
-    }
+
 
     @PatchMapping("/{id}")
     public TrainingDto updateTraining(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
         Training updated = trainingService.updateTraining(id, updates);
         return trainingMapper.toDto(updated);
     }
-
     @PutMapping("/{trainingId}")
     public ResponseEntity<?> updateTrainingFully(
             @PathVariable Long trainingId,
             @RequestBody TrainingDto trainingDto
     ) {
-        if (trainingDto == null || trainingDto.getUser() == null) {
+        if (trainingDto == null || trainingDto.getUserId() == null) {
             return ResponseEntity.badRequest().body("User ID is required.");
         }
-
         try {
             Training updatedTraining = trainingService.updateTrainingFully(trainingId, trainingDto);
             return ResponseEntity.ok(updatedTraining);
@@ -60,6 +53,21 @@ public class TrainingController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error occurred.");
         }
     }
+
+    @GetMapping("/activityType")
+    public ResponseEntity<List<TrainingDto>> getTrainingsByActivityType(
+            @RequestParam ActivityType activityType) {
+        List<TrainingDto> trainings = trainingService.getTrainingsByActivityType(activityType);
+        return ResponseEntity.ok(trainings);
+    }
+    @GetMapping("/user/{userId}")
+    public List<TrainingDto> getTrainingsByUserId(@PathVariable Long userId) {
+        return trainingService.getTrainingsByUserId(userId)
+                .stream()
+                .map(trainingMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
 
 
 }

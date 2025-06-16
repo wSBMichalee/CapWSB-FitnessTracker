@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface TrainingRepository extends JpaRepository<Training, Long> {
     List<Training> findByUserId(Long userId);
-}
+    List<Training> findByActivityType(ActivityType activityType);
 
+}
