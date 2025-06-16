@@ -48,4 +48,30 @@ public class TrainingService {
         return trainingRepository.save(training);
     }
 
+    public Training updateTrainingFully(Long id, TrainingDto trainingDto) {
+        Training existingTraining = trainingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Training with ID " + id + " not found"));
+
+        User user = userProvider.getUser(trainingDto.getUser())
+                .orElseThrow(() -> new IllegalArgumentException("User with ID " + trainingDto.getUser() + " not found"));
+
+        if (trainingDto.getStartTime() == null || trainingDto.getEndTime() == null) {
+            throw new IllegalArgumentException("Start time and end time cannot be null.");
+        }
+
+        if (trainingDto.getStartTime().after(trainingDto.getEndTime())) {
+            throw new IllegalArgumentException("Start time must be before end time.");
+        }
+
+        existingTraining.setUser(user);
+        existingTraining.setStartTime(trainingDto.getStartTime());
+        existingTraining.setEndTime(trainingDto.getEndTime());
+        existingTraining.setActivityType(trainingDto.getActivityType());
+        existingTraining.setDistance(trainingDto.getDistance());
+        existingTraining.setAverageSpeed(trainingDto.getAverageSpeed());
+
+        return trainingRepository.save(existingTraining);
+    }
+
 }
+

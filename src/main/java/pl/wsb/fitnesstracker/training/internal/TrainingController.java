@@ -39,4 +39,27 @@ public class TrainingController {
         Training updated = trainingService.updateTraining(id, updates);
         return trainingMapper.toDto(updated);
     }
+
+    @PutMapping("/{trainingId}")
+    public ResponseEntity<?> updateTrainingFully(
+            @PathVariable Long trainingId,
+            @RequestBody TrainingDto trainingDto
+    ) {
+        if (trainingDto == null || trainingDto.getUser() == null) {
+            return ResponseEntity.badRequest().body("User ID is required.");
+        }
+
+        try {
+            Training updatedTraining = trainingService.updateTrainingFully(trainingId, trainingDto);
+            return ResponseEntity.ok(updatedTraining);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error occurred.");
+        }
+    }
+
+
 }
